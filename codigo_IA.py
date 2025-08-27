@@ -1,59 +1,67 @@
-# Instalar biblioteca de similaridade (rapidfuzz é mais rápida e moderna que fuzzywuzzy)
-!pip install rapidfuzz
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 
-from rapidfuzz import fuzz, process
 
-class ConhecimentoBase:
-    def __init__(self):
-        self.respostas = {
-            "o que é software": "Software é um programa de computador, uma sequência lógica de instruções para manipular informações. Também inclui a documentação associada.",
-            "o que é um sistema": "Sistema é um conjunto de componentes inter-relacionados (software, hardware e recursos humanos) que operam de forma unificada para atingir um objetivo comum.",
-            "para que serve a materia de engenharia de software": "A Engenharia de Software é essencial para produzir softwares confiáveis e econômicos, além de permitir a reutilização de componentes.",
-            "qual o papel do analista de sistemas": "O Analista de Sistemas é fundamental nos processos de engenharia de software, responsável por pesquisar, planejar, coordenar equipes e recomendar soluções, atuando como uma 'ponte' entre programadores e usuários.",
-            "o que é poo": "Programação Orientada a Objetos (POO) é um paradigma moderno que organiza o código em torno de objetos, promovendo modularidade e reuso. Seus pilares incluem encapsulamento, herança e polimorfismo.",
-            "o que é um processo de software": "Um Processo de Software é um conjunto de atividades e resultados relacionados que levam à produção de um software. Ele cria padronização, permite reuso de partes e guia as atividades de um projeto.",
-            "quais as fases da análise de sistemas": "As fases da análise de sistemas incluem Análise, Projeto, Implementação, Testes, Documentação e Manutenção.",
-            "quais as categorias de software": "Existem diversas categorias, como software de sistema, de aplicação, embarcado, para aplicações web/móveis e de Inteligência Artificial."
-        }
+# 1. Definição do Problema
+# O problema é prever o tempo de entrega de um software baseado no número de requisitos.
 
-    def buscar_resposta(self, pergunta_chave):
-        pergunta_chave_formatada = pergunta_chave.lower().strip()
-        
-        # Busca a chave mais parecida usando similaridade
-        melhor_chave, score, _ = process.extractOne(
-            pergunta_chave_formatada,
-            self.respostas.keys(),
-            scorer=fuzz.token_sort_ratio
-        )
-        
-        if score >= 60:  # Limite mínimo de similaridade
-            return self.respostas[melhor_chave]
-        else:
-            return "Desculpe, não encontrei uma resposta direta. Tente reformular ou perguntar sobre 'software', 'sistema', 'POO', 'analista de sistemas'."
 
-class AssistenteAnalista:
-    def __init__(self, nome="Assistente AI", conhecimento_base=None):
-        self.nome = nome
-        self.conhecimento = conhecimento_base if conhecimento_base else ConhecimentoBase()
+# 2. Definição dos Dados (Entradas e Saídas) - CORRIGIDO
+# Em Machine Learning, os dados são a "informação" que os algoritmos sofisticados analisam [1].
+# A aplicação de Inteligência Artificial na indústria, por exemplo, utiliza tecnologias como
+# aprendizado de máquina e análise preditiva para otimizar processos [2, 3]. Para isso,
+# é fundamental fornecer dados concretos para que os algoritmos possam aprender padrões [1].
+#
+# Dados de exemplo:
+# (10 requisitos, 10 dias), (20 requisitos, 18 dias), (30 requisitos, 25 dias),
+# (40 requisitos, 32 dias), (50 requisitos, 40 dias), (60 requisitos, 45 dias)
+#
+# X = Número de requisitos (variável independente)
+# y = Tempo de entrega em dias (variável dependente)
+#
+# A correção aqui é popular os arrays com valores numéricos reais, e não deixá-los vazios.
+# O método .reshape(-1, 1) é necessário para formatar 'X' como uma coluna, conforme exigido
+# pela biblioteca scikit-learn para a variável independente.
 
-    def saudar(self):
-        print(f"Olá! Eu sou seu {self.nome}. Estou aqui para ajudar com dúvidas sobre Engenharia de Software e Análise de Sistemas.")
-        print("Você pode perguntar coisas como 'o que é software', 'qual o papel do analista de sistemas', 'o que é poo'.")
-        print("Digite 'sair' a qualquer momento para finalizar.")
 
-    def interagir(self):
-        self.saudar()
-        while True:
-            pergunta_usuario = input("\nVocê: ")
-            if pergunta_usuario.lower().strip() in ["sair", "adeus", "finalizar", "tchau"]:
-                print(f"{self.nome}: Até mais! Sempre à disposição para auxiliar em seus desafios de sistemas.")
-                break
-            else:
-                resposta = self.conhecimento.buscar_resposta(pergunta_usuario)
-                print(f"{self.nome}: {resposta}")
+X = np.array([10, 20, 30, 40, 50, 60]).reshape(-1, 1) # CORRIGIDO: Dados reais fornecidos e formatados
+y = np.array([10, 18, 25, 32, 40, 45])              # CORRIGIDO: Dados reais fornecidos
 
-# --- Execução ---
-if __name__ == "__main__":
-    minha_base = ConhecimentoBase()
-    meu_assistente = AssistenteAnalista(nome="Analista-Bot", conhecimento_base=minha_base)
-    meu_assistente.interagir()
+
+print("Dados de Entrada (X - Requisitos):", X.flatten())
+print("Dados de Saída (y - Tempo de Entrega):", y)
+print("-" * 30)
+
+
+# 3. Escolha e Treinamento do Modelo
+# Softwares de Inteligência Artificial utilizam algoritmos sofisticados para analisar
+# e solucionar problemas complexos [1]. A Regressão Linear é um exemplo de tal algoritmo
+# usado para análise preditiva [2, 3].
+model = LinearRegression()
+model.fit(X, y) # Esta linha agora pode ser executada com sucesso, pois X e y contêm dados.
+
+
+print("Modelo treinado com sucesso!")
+print(f"Coeficiente (inclinação): {model.coef_[0]:.2f}")
+print(f"Intercepto (ponto de corte): {model.intercept_:.2f}")
+print("-" * 30)
+
+
+# 4. Realização de Previsões
+# Exemplo de previsão: tempo de entrega para 70 requisitos
+requisitos_novos = np.array([[70]])
+tempo_previsto = model.predict(requisitos_novos)
+print(f"Para {requisitos_novos[0][0]} requisitos, o tempo de entrega previsto é de {tempo_previsto[0]:.2f} dias.")
+print("-" * 30)
+
+
+# 5. Visualização dos Resultados
+plt.scatter(X, y, color='blue', label='Dados Reais')
+plt.plot(X, model.predict(X), color='red', label='Linha de Regressão')
+plt.xlabel('Número de Requisitos')
+plt.ylabel('Tempo de Entrega (dias)')
+plt.title('Regressão Linear: Requisitos vs. Tempo de Entrega')
+plt.legend()
+plt.grid(True)
+plt.show()
